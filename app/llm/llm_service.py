@@ -8,24 +8,23 @@ def generate_ai_reply(user_message: str) -> str:
     profile = get_profile()
 
     messages = [
-        {
-            "role": "system",
-            "content": NECO_SYSTEM_PROMPT
-        }
+        {"role": "system", "content": NECO_SYSTEM_PROMPT}
     ]
 
-    # 👇 YUMUŞAK MEMORY INJECTION
-    if profile:
-        memory_context = ", ".join(
-            f"{k}: {v}" for k, v in profile.items()
-        )
+    context_parts = []
 
+    if profile.get("name"):
+        context_parts.append(f"Kullanıcının adı {profile['name']}.")
+
+    if profile.get("mood"):
+        context_parts.append(f"Kullanıcının şu anki ruh hali {profile['mood']}.")
+
+    if context_parts:
         messages.append({
             "role": "system",
-            "content": f"Konuşma sırasında fark ettiğin şeyler: {memory_context}"
+            "content": " ".join(context_parts)
         })
 
-    # 👇 GERÇEK KONUŞMA
     for msg in memory:
         messages.append(msg)
 
